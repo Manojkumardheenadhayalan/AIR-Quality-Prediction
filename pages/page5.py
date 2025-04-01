@@ -47,7 +47,7 @@ def run():
     add_custom_css()
     st.title("Interactive Prediction Tool")
 
-    df = pd.read_csv("PRSA_Data_Changping_20130301-20170228.csv")
+    df = pd.read_csv("merged_data.csv")
 
     feature_cols = ["PM10", "SO2", "NO2", "CO", "O3", "TEMP", "PRES", "RAIN", "WSPM"]
     target_col = "PM2.5"

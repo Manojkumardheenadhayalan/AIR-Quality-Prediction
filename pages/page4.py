@@ -59,7 +59,7 @@ def run():
         "Ridge Regression"
     ])
     
-    df = pd.read_csv("PRSA_Data_Changping_20130301-20170228.csv")
+    df = pd.read_csv("merged_data.csv")
     st.markdown("#### Dataset Overview")
     st.write(df.head())
 

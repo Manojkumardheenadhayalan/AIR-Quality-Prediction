@@ -6,6 +6,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import seaborn as sns
 
 def add_custom_css():
     st.markdown(
@@ -59,13 +60,68 @@ def run():
         "Ridge Regression"
     ])
 
-    df = pd.read_csv("PRSA_Data_Changping_20130301-20170228.csv")
+    df = pd.read_csv("merged_data.csv")
     st.markdown("#### Dataset Overview")
     st.write(df.head())
-
+    
+    # Exploratory Data Analysis (EDA)
+    st.markdown("### Exploratory Data Analysis (EDA)")
+    
+    numeric_columns = ["year", "month", "day", "hour", "PM2.5", "PM10", "SO2", "NO2", "CO", "O3", "TEMP", "PRES", "DEWP", "RAIN", "WSPM"]
+    categorical_columns = ["wd", "station", "Category"]
+    
+    st.markdown("#### Summary Statistics")
+    st.write(df.describe())
+    
+    for col in numeric_columns:
+        st.markdown(f"### Distribution of {col}")
+        plt.figure(figsize=(10, 5))
+        sns.histplot(df[col], bins=30, kde=True, color="blue")
+        plt.xlabel(col)
+        plt.ylabel("Frequency")
+        plt.title(f"Distribution of {col}")
+        st.pyplot(plt)
+    
+    for col in categorical_columns:
+        st.markdown(f"### Distribution of {col}")
+        plt.figure(figsize=(12, 6))
+        sns.countplot(data=df, x=col, palette="coolwarm")
+        plt.xticks(rotation=45)
+        plt.xlabel(col)
+        plt.ylabel("Count")
+        plt.title(f"Distribution of {col}")
+        st.pyplot(plt)
+    
+    # Correlation Matrix
+    st.markdown("### Correlation Matrix")
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(df[numeric_columns].corr(), annot=True, cmap="coolwarm", fmt=".2f")
+    plt.title("Correlation Matrix of Numeric Features")
+    st.pyplot(plt)
+    
+    # Scatter Plots
+    st.markdown("### Scatter Plots")
+    for col in numeric_columns:
+        if col != "PM2.5":
+            plt.figure(figsize=(10, 5))
+            sns.scatterplot(x=df[col], y=df["PM2.5"], alpha=0.5, color="red")
+            plt.xlabel(col)
+            plt.ylabel("PM2.5")
+            plt.title(f"Scatter Plot: {col} vs PM2.5")
+            st.pyplot(plt)
+    
+    # Box Plots
+    st.markdown("### Box Plots")
+    for col in numeric_columns:
+        plt.figure(figsize=(10, 5))
+        sns.boxplot(y=df[col], color="green")
+        plt.ylabel(col)
+        plt.title(f"Box Plot of {col}")
+        st.pyplot(plt)
+    
+    # Data Preparation
     X = df[["PM10", "SO2", "NO2", "CO", "O3", "TEMP", "PRES", "RAIN", "WSPM"]]
     y = df["PM2.5"]
-
     X = X.fillna(X.mean())
     y = y.fillna(y.mean())
     
@@ -100,31 +156,5 @@ def run():
         plt.gca().invert_yaxis()
         st.pyplot(plt)
     
-    st.markdown("### Predicted vs Actual Values")
-    plt.figure(figsize=(10, 6))
-    plt.scatter(y_test, predictions, alpha=0.6, color="purple")
-    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], "r--", label="Perfect Prediction Line")
-    plt.xlabel("Actual PM2.5")
-    plt.ylabel("Predicted PM2.5")
-    plt.legend()
-    st.pyplot(plt)
-    
-    residuals = y_test - predictions
-    st.markdown("### Residual Analysis")
-    plt.figure(figsize=(10, 6))
-    plt.scatter(range(len(residuals)), residuals, alpha=0.6, color="green")
-    plt.axhline(0, color="red", linestyle="--", label="Zero Residual Line")
-    plt.xlabel("Sample Index")
-    plt.ylabel("Residual")
-    plt.legend()
-    st.pyplot(plt)
-    
-    plt.figure(figsize=(10, 6))
-    plt.hist(residuals, bins=30, color="orange", edgecolor="black", alpha=0.7)
-    plt.xlabel("Residual Value")
-    plt.ylabel("Frequency")
-    plt.title("Residual Distribution")
-    st.pyplot(plt)
-
 if __name__ == "__main__":
     run()

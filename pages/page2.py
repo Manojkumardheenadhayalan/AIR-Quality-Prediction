@@ -48,7 +48,7 @@ def run():
 
     # Load data
     st.markdown("### Dataset Overview")
-    df = pd.read_csv("PRSA_Data_Changping_20130301-20170228.csv")
+    df = pd.read_csv("merged_data.csv")
 
     st.write("Here is a preview of the dataset:")
     st.dataframe(df.head())
